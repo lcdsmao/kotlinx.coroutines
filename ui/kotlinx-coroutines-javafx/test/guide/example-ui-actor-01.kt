@@ -3,11 +3,11 @@
  */
 
 // This file was automatically generated from coroutines-guide-ui.md by Knit tool. Do not edit.
-package kotlinx.coroutines.experimental.javafx.guide.actor01
+package kotlinx.coroutines.javafx.guide.actor01
 
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.channels.*
-import kotlinx.coroutines.experimental.javafx.JavaFx as UI
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.javafx.JavaFx as UI
 import javafx.application.Application
 import javafx.event.EventHandler
 import javafx.geometry.*

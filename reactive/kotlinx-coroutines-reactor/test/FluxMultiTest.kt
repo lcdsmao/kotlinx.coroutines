@@ -2,13 +2,13 @@
  * Copyright 2016-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.coroutines.experimental.reactor
+package kotlinx.coroutines.reactor
 
-import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.TestBase
-import kotlinx.coroutines.experimental.Unconfined
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.reactive.consumeEach
+import kotlinx.coroutines.DefaultDispatcher
+import kotlinx.coroutines.TestBase
+import kotlinx.coroutines.Unconfined
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.reactive.consumeEach
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import reactor.core.publisher.Flux

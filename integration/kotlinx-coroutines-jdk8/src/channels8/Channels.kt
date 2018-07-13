@@ -2,20 +2,20 @@
  * Copyright 2016-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.coroutines.experimental.channels8
+package kotlinx.coroutines.channels8
 
-import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.channels.produce
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.DefaultDispatcher
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.runBlocking
 import java.util.*
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 import java.util.stream.Collector
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.*
 
 /**
  * Creates a [ProducerJob] to read all element of the [Stream].

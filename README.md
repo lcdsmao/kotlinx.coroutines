@@ -5,7 +5,7 @@
 [![Download](https://api.bintray.com/packages/kotlin/kotlinx/kotlinx.coroutines/images/download.svg?version=0.25.3) ](https://bintray.com/kotlin/kotlinx/kotlinx.coroutines/0.25.3)
 
 Library support for Kotlin coroutines with [multiplatform](#multiplatform) support.
-This is a companion version for Kotlin 1.2.61 release.
+This is a companion version for Kotlin 1.3-M2 release.
 
 ```kotlin
 launch {
@@ -71,7 +71,7 @@ And make sure that you use the latest Kotlin version:
 
 ```xml
 <properties>
-    <kotlin.version>1.2.61</kotlin.version>
+    <kotlin.version>1.3-M2</kotlin.version>
 </properties>
 ```
 
@@ -87,7 +87,7 @@ And make sure that you use the latest Kotlin version:
 
 ```groovy
 buildscript {
-    ext.kotlin_version = '1.2.61'
+    ext.kotlin_version = '1.3-M2'
 }
 ```
 
@@ -116,7 +116,7 @@ module as dependency when using `kotlinx.coroutines` on Android:
 implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.25.3'
 ```
 
-This gives you access to Android [UI](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/kotlinx.coroutines.experimental.android/-u-i.html)
+This gives you access to Android [UI](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/kotlinx.coroutines.android/-u-i.html)
 coroutine dispatcher and also makes sure that in case of crashed coroutine with unhandled exception this
 exception is logged before crashing Android application, similarly to the way uncaught exceptions in 
 threads are handled by Android runtime. 

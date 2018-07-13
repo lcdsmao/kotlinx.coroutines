@@ -3,12 +3,12 @@
  */
 
 // This file was automatically generated from coroutines-guide.md by Knit tool. Do not edit.
-package kotlinx.coroutines.experimental.guide.sync06
+package kotlinx.coroutines.guide.sync06
 
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.sync.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.*
 import kotlin.system.*
-import kotlin.coroutines.experimental.*
+import kotlin.coroutines.*
 
 suspend fun massiveRun(context: CoroutineContext, action: suspend () -> Unit) {
     val n = 1000 // number of coroutines to launch

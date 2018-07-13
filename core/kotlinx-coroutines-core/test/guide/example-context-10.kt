@@ -3,10 +3,10 @@
  */
 
 // This file was automatically generated from coroutines-guide.md by Knit tool. Do not edit.
-package kotlinx.coroutines.experimental.guide.context10
+package kotlinx.coroutines.guide.context10
 
-import kotlinx.coroutines.experimental.*
-import kotlin.coroutines.experimental.*
+import kotlinx.coroutines.*
+import kotlin.coroutines.*
 
 fun main(args: Array<String>) = runBlocking<Unit> {
     val job = Job() // create a job object to manage our lifecycle

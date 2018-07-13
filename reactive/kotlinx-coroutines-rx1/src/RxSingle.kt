@@ -2,11 +2,11 @@
  * Copyright 2016-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.coroutines.experimental.rx1
+package kotlinx.coroutines.rx1
 
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.*
 import rx.*
-import kotlin.coroutines.experimental.*
+import kotlin.coroutines.*
 
 /**
  * Creates cold [Single] that runs a given [block] in a coroutine.

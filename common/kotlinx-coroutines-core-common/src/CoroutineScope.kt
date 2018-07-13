@@ -2,9 +2,9 @@
  * Copyright 2016-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.coroutines.experimental
+package kotlinx.coroutines
 
-import kotlin.coroutines.experimental.*
+import kotlin.coroutines.*
 import kotlin.internal.*
 
 /**
@@ -24,19 +24,19 @@ public interface CoroutineScope {
      *
      * This property is a shortcut for `coroutineContext.isActive` in the scope when
      * [CoroutineScope] is available.
-     * See [coroutineContext][kotlin.coroutines.experimental.coroutineContext],
-     * [isActive][kotlinx.coroutines.experimental.isActive] and [Job.isActive].
+     * See [coroutineContext][kotlin.coroutines.coroutineContext],
+     * [isActive][kotlinx.coroutines.isActive] and [Job.isActive].
      */
     public val isActive: Boolean
 
     /**
      * Returns the context of this coroutine.
      *
-     * @suppress: **Deprecated**: Replaced with top-level [kotlin.coroutines.experimental.coroutineContext].
+     * @suppress: **Deprecated**: Replaced with top-level [kotlin.coroutines.coroutineContext].
      */
     @Deprecated("Replace with top-level coroutineContext",
         replaceWith = ReplaceWith("coroutineContext",
-            imports = ["kotlin.coroutines.experimental.coroutineContext"]))
+            imports = ["kotlin.coroutines.coroutineContext"]))
     @LowPriorityInOverloadResolution
     @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
     public val coroutineContext: CoroutineContext

@@ -2,12 +2,12 @@
  * Copyright 2016-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.coroutines.experimental.guava
+package kotlinx.coroutines.guava
 
 import com.google.common.util.concurrent.*
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.*
 import java.util.concurrent.*
-import kotlin.coroutines.experimental.*
+import kotlin.coroutines.*
 
 /**
  * Starts new coroutine and returns its results an an implementation of [ListenableFuture].
@@ -77,8 +77,11 @@ private class ListenableFutureCoroutine<T>(
 ) : AbstractFuture<T>(), Continuation<T>, CoroutineScope {
     override val coroutineContext: CoroutineContext get() = context
     override val isActive: Boolean get() = context[Job]!!.isActive
-    override fun resume(value: T) { set(value) }
-    override fun resumeWithException(exception: Throwable) { setException(exception) }
+    override fun resumeWith(result: SuccessOrFailure<T>) {
+        result
+            .onSuccess { set(it) }
+            .onFailure { setException(it) }
+    }
     override fun interruptTask() { context[Job]!!.cancel() }
 }
 

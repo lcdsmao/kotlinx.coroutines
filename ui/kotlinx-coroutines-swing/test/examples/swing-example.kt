@@ -4,12 +4,12 @@
 
 package examples
 
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.swing.Swing
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.swing.Swing
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ForkJoinPool
-import kotlin.coroutines.experimental.suspendCoroutine
+import kotlin.coroutines.*
 
 fun log(msg: String) = println("${SimpleDateFormat("yyyyMMdd-HHmmss.sss").format(Date())} [${Thread.currentThread().name}] $msg")
 

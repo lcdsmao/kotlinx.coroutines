@@ -2,13 +2,13 @@
  * Copyright 2016-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.coroutines.experimental.reactor
+package kotlinx.coroutines.reactor
 
-import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.channels.ProducerScope
-import kotlinx.coroutines.experimental.reactive.publish
+import kotlinx.coroutines.DefaultDispatcher
+import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.reactive.publish
 import reactor.core.publisher.Flux
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Creates cold reactive [Flux] that runs a given [block] in a coroutine.

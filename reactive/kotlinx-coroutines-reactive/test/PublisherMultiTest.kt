@@ -2,12 +2,12 @@
  * Copyright 2016-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.coroutines.experimental.reactive
+package kotlinx.coroutines.reactive
 
-import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.TestBase
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.DefaultDispatcher
+import kotlinx.coroutines.TestBase
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.core.IsEqual
 import org.junit.Assert.assertThat
 import org.junit.Assert.assertTrue

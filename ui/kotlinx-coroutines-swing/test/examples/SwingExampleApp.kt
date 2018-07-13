@@ -4,9 +4,9 @@
 
 package examples
 
-import kotlinx.coroutines.experimental.future.await
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.swing.Swing
+import kotlinx.coroutines.future.await
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.swing.Swing
 import java.awt.Insets
 import java.util.concurrent.CompletableFuture
 import javax.swing.*

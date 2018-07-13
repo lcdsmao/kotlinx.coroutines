@@ -5,12 +5,12 @@
 @file:JvmMultifileClass
 @file:JvmName("BuildersKt")
 
-package kotlinx.coroutines.experimental
+package kotlinx.coroutines
 
-import kotlinx.coroutines.experimental.internal.*
-import kotlinx.coroutines.experimental.intrinsics.*
-import kotlin.coroutines.experimental.*
-import kotlin.coroutines.experimental.intrinsics.*
+import kotlinx.coroutines.internal.*
+import kotlinx.coroutines.intrinsics.*
+import kotlin.coroutines.*
+import kotlin.coroutines.intrinsics.*
 
 // --------------- basic coroutine builders ---------------
 
@@ -20,7 +20,7 @@ import kotlin.coroutines.experimental.intrinsics.*
  *
  * The [context] for the new coroutine can be explicitly specified.
  * See [CoroutineDispatcher] for the standard context implementations that are provided by `kotlinx.coroutines`.
- * The [coroutineContext](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.coroutines.experimental/coroutine-context.html)
+ * The [coroutineContext](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.coroutines/coroutine-context.html)
  * of the parent coroutine may be used,
  * in which case the [Job] of the resulting coroutine is a child of the job of the parent coroutine.
  * The parent job may be also explicitly specified using [parent] parameter.
@@ -184,15 +184,9 @@ private class RunContinuationUnintercepted<in T>(
     override val context: CoroutineContext,
     private val continuation: Continuation<T>
 ): Continuation<T> {
-    override fun resume(value: T) {
+    override fun resumeWith(result: SuccessOrFailure<T>) {
         withCoroutineContext(continuation.context) {
-            continuation.resume(value)
-        }
-    }
-
-    override fun resumeWithException(exception: Throwable) {
-        withCoroutineContext(continuation.context) {
-            continuation.resumeWithException(exception)
+            continuation.resumeWith(result)
         }
     }
 }

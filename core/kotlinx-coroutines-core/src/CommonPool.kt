@@ -2,12 +2,12 @@
  * Copyright 2016-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.coroutines.experimental
+package kotlinx.coroutines
 
-import kotlinx.coroutines.experimental.timeunit.TimeUnit
+import kotlinx.coroutines.timeunit.TimeUnit
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
-import kotlin.coroutines.experimental.*
+import kotlin.coroutines.*
 
 /**
  * Represents common pool of shared threads as coroutine dispatcher for compute-intensive tasks.

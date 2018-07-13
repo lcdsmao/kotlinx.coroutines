@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.*
 import kotlinx.html.*
 import kotlinx.html.div
 import kotlinx.html.dom.*

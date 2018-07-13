@@ -5,10 +5,10 @@
 
 @file:Suppress("NAMED_ARGUMENTS_NOT_ALLOWED") // KT-21913
 
-package kotlinx.coroutines.experimental
+package kotlinx.coroutines
 
-import kotlinx.coroutines.experimental.timeunit.*
-import kotlin.coroutines.experimental.*
+import kotlinx.coroutines.timeunit.*
+import kotlin.coroutines.*
 import kotlin.test.*
 
 class DelayTest : TestBase() {

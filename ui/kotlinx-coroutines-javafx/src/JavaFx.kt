@@ -2,17 +2,17 @@
  * Copyright 2016-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.coroutines.experimental.javafx
+package kotlinx.coroutines.javafx
 
 import javafx.animation.*
 import javafx.application.*
 import javafx.event.*
 import javafx.util.*
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.javafx.JavaFx.delay
+import kotlinx.coroutines.*
+import kotlinx.coroutines.javafx.JavaFx.delay
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Dispatches execution onto JavaFx application thread and provides native [delay] support.

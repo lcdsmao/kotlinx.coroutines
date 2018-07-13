@@ -2,12 +2,12 @@
  * Copyright 2016-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.coroutines.experimental.examples
+package kotlinx.coroutines.examples
 
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.future.asCompletableFuture
+import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.future.asCompletableFuture
 import java.util.concurrent.TimeUnit
 
 fun main(args: Array<String>)  {
