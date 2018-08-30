@@ -122,32 +122,11 @@ public interface Deferred<out T> : Job {
     public val isComputing: Boolean get() = isActive
 }
 
+
 /**
- * Creates new coroutine and returns its future result as an implementation of [Deferred].
- *
- * The running coroutine is cancelled when the resulting object is [cancelled][Job.cancel].
- *
- * The [context] for the new coroutine can be explicitly specified.
- * See [CoroutineDispatcher] for the standard context implementations that are provided by `kotlinx.coroutines`.
- * The [coroutineContext](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.coroutines.experimental/coroutine-context.html)
- * of the parent coroutine may be used,
- * in which case the [Job] of the resulting coroutine is a child of the job of the parent coroutine.
- * The parent job may be also explicitly specified using [parent] parameter.
- *
- * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
- *
- * By default, the coroutine is immediately scheduled for execution.
- * Other options can be specified via `start` parameter. See [CoroutineStart] for details.
- * An optional [start] parameter can be set to [CoroutineStart.LAZY] to start coroutine _lazily_. In this case,,
- * the resulting [Deferred] is created in _new_ state. It can be explicitly started with [start][Job.start]
- * function and will be started implicitly on the first invocation of [join][Job.join], [await][Deferred.await] or [awaitAll].
- *
- * @param context context of the coroutine. The default value is [DefaultDispatcher].
- * @param start coroutine start option. The default value is [CoroutineStart.DEFAULT].
- * @param parent explicitly specifies the parent job, overrides job from the [context] (if any).
- * @param onCompletion optional completion handler for the coroutine (see [Job.invokeOnCompletion]).
- * @param block the coroutine code.
+ * TODO replace with and explain why it's deprecated
  */
+@Deprecated(message = "TODO", replaceWith = ReplaceWith("CoroutineScope.async"))
 public fun <T> async(
     context: CoroutineContext = DefaultDispatcher,
     start: CoroutineStart = CoroutineStart.DEFAULT,
@@ -156,6 +135,44 @@ public fun <T> async(
     block: suspend CoroutineScope.() -> T
 ): Deferred<T> {
     val newContext = newCoroutineContext(context, parent)
+    val coroutine = if (start.isLazy)
+        LazyDeferredCoroutine(newContext, block) else
+        DeferredCoroutine<T>(newContext, active = true)
+    if (onCompletion != null) coroutine.invokeOnCompletion(handler = onCompletion)
+    coroutine.start(start, coroutine, block)
+    return coroutine
+}
+
+
+/**
+ * Creates new coroutine and returns its future result as an implementation of [Deferred].
+ *
+ * The running coroutine is cancelled when the resulting deferred is [cancelled][Job.cancel].
+ * Parent of the created coroutine is inherited from the provided [CoroutineScope].
+ *
+ * The [context] for the new coroutine can be explicitly specified.
+ * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
+ *
+ * By default, the coroutine is immediately scheduled for execution.
+ * Other options can be specified via `start` parameter. See [CoroutineStart] for details.
+ * An optional [start] parameter can be set to [CoroutineStart.LAZY] to start coroutine _lazily_. In this case,,
+ * the resulting [Deferred] is created in _new_ state. It can be explicitly started with [start][Job.start]
+ * function and will be started implicitly on the first invocation of [join][Job.join], [await][Deferred.await] or [awaitAll].
+ *
+ * @param context additional (to [CoroutineScope.coroutineContext]]) context of the coroutine
+ * @param start coroutine start option. The default value is [CoroutineStart.DEFAULT].
+ * @param onCompletion optional completion handler for the coroutine (see [Job.invokeOnCompletion]).
+ * @param block the coroutine code.
+ */
+public fun <T> CoroutineScope.async(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    onCompletion: CompletionHandler? = null,
+    block: suspend CoroutineScope.() -> T
+): Deferred<T> {
+    val aggregated = coroutineContext + context
+    val ctx = if (aggregated[ContinuationInterceptor] != null) aggregated else aggregated + DefaultDispatcher
+    val newContext = newCoroutineContext(ctx)
     val coroutine = if (start.isLazy)
         LazyDeferredCoroutine(newContext, block) else
         DeferredCoroutine<T>(newContext, active = true)
