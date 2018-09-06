@@ -42,6 +42,25 @@ public interface CoroutineScope {
 }
 
 /**
+ * Returns `true` when current [Job] is still active (has not completed and was not cancelled yet).
+ *
+ * Check this property in long-running computation loops to support cancellation:
+ * ```
+ * while (_isActive) {
+ *     // do some computation
+ * }
+ * ```
+ *
+ * This property is a shortcut for `coroutineContext.isActive` in the scope when
+ * [CoroutineScope] is available.
+ * See [coroutineContext][kotlin.coroutines.experimental.coroutineContext],
+ * [isActive][kotlinx.coroutines.experimental.isActive] and [Job.isActive].
+ *
+ * TODO it's a replacement for isActive
+ */
+public val CoroutineScope._isActive: Boolean get() = coroutineContext[Job]?.isActive ?: true
+
+/**
  * A global [CoroutineScope] which is not bound to any job, which lifecycle matches
  * application lifecycle.
  *

@@ -12,7 +12,7 @@ fun main(args: Array<String>) = runBlocking<Unit> {
     val job = launch(DefaultDispatcher) {
         var nextPrintTime = startTime
         var i = 0
-        while (isActive) { // cancellable computation loop
+        while (_isActive) { // cancellable computation loop
             // print a message twice a second
             if (timeSource.currentTimeMillis() >= nextPrintTime) {
                 println("I'm sleeping ${i++} ...")

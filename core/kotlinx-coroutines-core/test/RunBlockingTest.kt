@@ -12,7 +12,7 @@ class RunBlockingTest : TestBase() {
     @Test
     fun testWithTimeoutBusyWait() = runBlocking {
         val value = withTimeoutOrNull(10) {
-            while (isActive) {
+            while (_isActive) {
                 // Busy wait
             }
             "value"
