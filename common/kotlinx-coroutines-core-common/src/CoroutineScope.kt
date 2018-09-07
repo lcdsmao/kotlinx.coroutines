@@ -8,8 +8,48 @@ import kotlinx.coroutines.experimental.internal.*
 import kotlin.coroutines.experimental.*
 
 /**
- * Receiver interface for generic coroutine builders, so that the code inside a coroutine
- * has access to inherited [coroutineContext] (and parent [Job]).
+ *
+ * Interface which defines a scope of the coroutines. Every coroutine builder
+ * is an extension on [CoroutineScope] and inherits its [coroutineContext][CoroutineScope.coroutineContext]
+ * to automatically propagate both context elements and cancellation.
+ *
+ * [CoroutineScope] should be implemented on entities with well-defined lifecycle which are responsible
+ * for launching children coroutines. Example of such entity on Android is Activity.
+ * Usage of this interface may look like this:
+ *
+ * ```
+ * class MyActivity : AppCompatActivity(), CoroutineScope {
+ *
+ * 	   override val coroutineContext: CoroutineContext
+ *         get() = job + UI
+ *
+ *     override fun onCreate(savedInstanceState: Bundle?) {
+ *         super.onCreate(savedInstanceState)
+ *         job = Job()
+ *     }
+ *
+ *     override fun onDestroy() {
+ *         super.onDestroy()
+ *         job.cancel() // Cancel job on activity destroy. After destroy all children jobs will be cancelled automatically
+ *     }
+ *
+ *     /*
+ *      * Note how coroutine builders are scoped: if activity is destroyed or any of the launched coroutines
+ *      * in this method throws an exception, then all nested coroutines will be cancelled.
+ *      */
+ *     fun loadDataFromUI() = launch { // <- extension on current activity, launched in CommonPool
+ *        val ioData = async(IO) { // <- extension on launch scope, launched in IO dispatcher
+ *          // long computation
+ *        }
+ *
+ *        withContext(UI) {
+ *            val data = ioData.await()
+ *            draw(data)
+ *        }
+ *     }
+ * }
+ *
+ * ```
  */
 public interface CoroutineScope {
 
@@ -28,9 +68,9 @@ public interface CoroutineScope {
      * See [coroutineContext][kotlin.coroutines.experimental.coroutineContext],
      * [isActive][kotlinx.coroutines.experimental.isActive] and [Job.isActive].
      */
-    @Deprecated(message = "TODO", replaceWith = ReplaceWith("something top-level"))
+    @Deprecated(message = "Deprecated in the favor of top-level property", replaceWith = ReplaceWith("CoroutineScope._isActive"))
     public val isActive: Boolean
-        get() = coroutineContext[Job]?.isActive ?: true // TODO is it 'true' if job is not present?
+        get() = coroutineContext[Job]?.isActive ?: true
 
     /**
      * Returns the context of this scope
@@ -56,26 +96,36 @@ public interface CoroutineScope {
  * See [coroutineContext][kotlin.coroutines.experimental.coroutineContext],
  * [isActive][kotlinx.coroutines.experimental.isActive] and [Job.isActive].
  *
- * TODO it's a replacement for isActive
+ * TODO it's a replacement for isActive, but ABI breaking change
  */
 public val CoroutineScope._isActive: Boolean get() = coroutineContext[Job]?.isActive ?: true
 
 /**
- * A global [CoroutineScope] which is not bound to any job, which lifecycle matches
- * application lifecycle.
+ * A global [CoroutineScope] not bound to any job.
  *
- * Global scope is used to launch top-level coroutines which are operating the whole application lifetime
- * and should not be cancelled prematurely.
- * Application code usually should use application-defined [CoroutineScope].
+ * Global scope is used to launch top-level coroutines which are operating on the whole application lifetime
+ * and are not cancelled prematurely.
+ * Another use of the global scope is [Unconfined] operators, which don't have any job associated with them.
  *
- * TODO discourage users from using global scope in KDoc somehow?
+ * Application code usually should use application-defined [CoroutineScope], using [async] or [launch]
+ * on the instance of [GlobalScope] is highly discouraged.
+ *
+ * Usage of this interface may look like this:
+ * ```
+ * fun ReceiveChannel<Int>.sqrt(): ReceiveChannel<Double> = GlobalScope.produce(Unconfined) {
+ *     for (number in this) {
+ *         send(Math.sqrt(number))
+ *     }
+ * }
+ *
+ * ```
  */
 object GlobalScope : CoroutineScope {
 
     override val isActive: Boolean
         get() = true
 
-    override val coroutineContext: CoroutineContext = EmptyCoroutineContext // Or NonCancellable?
+    override val coroutineContext: CoroutineContext = EmptyCoroutineContext
 }
 
 /**
@@ -93,12 +143,11 @@ object GlobalScope : CoroutineScope {
  *      ... load some UI data ...
  *   }
  *
- *   withContext(UI) { // <- extension on current scope
+ *   withContext(UI) {
  *     doSomeWork()
  *     val result = data.await()
  *     display(result)
  *   }
- *
  * }
  * ```
  *

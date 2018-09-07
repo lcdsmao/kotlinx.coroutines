@@ -28,46 +28,10 @@ fun <E> ReceiveChannel<E>.broadcast(
     }
 
 /**
- * Launches new coroutine to produce a stream of values by sending them to a broadcast channel
- * and returns a reference to the coroutine as a [BroadcastChannel]. The resulting
- * object can be used to [subscribe][BroadcastChannel.openSubscription] to elements produced by this coroutine.
- *
- * The scope of the coroutine contains [ProducerScope] interface, which implements
- * both [CoroutineScope] and [SendChannel], so that coroutine can invoke
- * [send][SendChannel.send] directly. The channel is [closed][SendChannel.close]
- * when the coroutine completes.
- *
- * The [context] for the new coroutine can be explicitly specified.
- * See [CoroutineDispatcher] for the standard context implementations that are provided by `kotlinx.coroutines`.
- * The [coroutineContext] of the parent coroutine may be used,
- * in which case the [Job] of the resulting coroutine is a child of the job of the parent coroutine.
- * The parent job may be also explicitly specified using [parent] parameter.
- *
- * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
- *
- * Uncaught exceptions in this coroutine close the channel with this exception as a cause and
- * the resulting channel becomes _failed_, so that any attempt to receive from such a channel throws exception.
- *
- * The kind of the resulting channel depends on the specified [capacity] parameter:
- * * when `capacity` positive (1 by default), but less than [UNLIMITED] -- uses [ArrayBroadcastChannel]
- * * when `capacity` is [CONFLATED] -- uses [ConflatedBroadcastChannel] that conflates back-to-back sends;
- * * otherwise -- throws [IllegalArgumentException].
- *
- * **Note:** By default, the coroutine does not start until the first subscriber appears via [BroadcastChannel.openSubscription]
- * as [start] parameter has a value of [CoroutineStart.LAZY] by default.
- * This ensures that the first subscriber does not miss any sent elements.
- * However, later subscribers may miss elements.
- *
- * See [newCoroutineContext] for a description of debugging facilities that are available for newly created coroutine.
- *
- * @param context context of the coroutine. The default value is [DefaultDispatcher].
- * @param capacity capacity of the channel's buffer (1 by default).
- * @param start coroutine start option. The default value is [CoroutineStart.LAZY].
- * @param parent explicitly specifies the parent job, overrides job from the [context] (if any).*
- * @param onCompletion optional completion handler for the producer coroutine (see [Job.invokeOnCompletion]).
- * @param block the coroutine code.
+ * Launches new coroutine to produce a stream of values by sending them to a broadcast channel.
+ * Deprecated, use [CoroutineScope.broadcast] instead.
  */
-@Deprecated(message = "TODO", replaceWith = ReplaceWith(""))
+@Deprecated(message = "Standalone coroutine builders are deprecated, use extensions on CoroutineScope instead. This API will be hidden in the next release")
 public fun <E> broadcast(
     context: CoroutineContext = DefaultDispatcher,
     capacity: Int = 1,

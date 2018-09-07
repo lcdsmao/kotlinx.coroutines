@@ -35,42 +35,10 @@ interface ProducerJob<out E> : ReceiveChannel<E>, Job {
 
 /**
  * Launches new coroutine to produce a stream of values by sending them to a channel
- * and returns a reference to the coroutine as a [ReceiveChannel]. This resulting
- * object can be used to [receive][ReceiveChannel.receive] elements produced by this coroutine.
- *
- * The scope of the coroutine contains [ProducerScope] interface, which implements
- * both [CoroutineScope] and [SendChannel], so that coroutine can invoke
- * [send][SendChannel.send] directly. The channel is [closed][SendChannel.close]
- * when the coroutine completes.
- * The running coroutine is cancelled when its receive channel is [cancelled][ReceiveChannel.cancel].
- *
- * The [context] for the new coroutine can be explicitly specified.
- * See [CoroutineDispatcher] for the standard context implementations that are provided by `kotlinx.coroutines`.
- * The [coroutineContext] of the parent coroutine may be used,
- * in which case the [Job] of the resulting coroutine is a child of the job of the parent coroutine.
- * The parent job may be also explicitly specified using [parent] parameter.
- *
- * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
- *
- * Uncaught exceptions in this coroutine close the channel with this exception as a cause and
- * the resulting channel becomes _failed_, so that any attempt to receive from such a channel throws exception.
- *
- * The kind of the resulting channel depends on the specified [capacity] parameter:
- * * when `capacity` is 0 (default) -- uses [RendezvousChannel] without a buffer;
- * * when `capacity` is [Channel.UNLIMITED] -- uses [LinkedListChannel] with buffer of unlimited size;
- * * when `capacity` is [Channel.CONFLATED] -- uses [ConflatedChannel] that conflates back-to-back sends;
- * * when `capacity` is positive, but less than [UNLIMITED] -- uses [ArrayChannel] with a buffer of the specified `capacity`;
- * * otherwise -- throws [IllegalArgumentException].
- *
- * See [newCoroutineContext] for a description of debugging facilities that are available for newly created coroutine.
- *
- * @param context context of the coroutine. The default value is [DefaultDispatcher].
- * @param capacity capacity of the channel's buffer (no buffer by default).
- * @param parent explicitly specifies the parent job, overrides job from the [context] (if any).*
- * @param onCompletion optional completion handler for the producer coroutine (see [Job.invokeOnCompletion]).
- * @param block the coroutine code.
+ * and returns a reference to the coroutine as a [ReceiveChannel].
+ * Deprecated, use [CoroutineScope.produce]
  */
-@Deprecated(message = "TODO")
+@Deprecated(message = "Standalone coroutine builders are deprecated, use extensions on CoroutineScope instead. This API will be hidden in the next release")
 public fun <E> produce(
     context: CoroutineContext = DefaultDispatcher,
     capacity: Int = 0,

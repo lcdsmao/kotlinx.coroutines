@@ -15,10 +15,10 @@ import kotlin.coroutines.experimental.intrinsics.*
 // --------------- basic coroutine builders ---------------
 
 /**
- * TODO replace with and explain why it's deprecated
+ * Launches new coroutine without blocking current thread and returns a reference to the coroutine as a [Job].
+ * Deprecated, use [CoroutineScope.launch] instead.
  */
-@Deprecated(message = "Top-level launch is deprecated in favor of extension on CoroutineScope",
-    level = DeprecationLevel.WARNING, replaceWith = ReplaceWith("CoroutineScope.launch"))
+@Deprecated(message = "Standalone coroutine builders are deprecated, use extensions on CoroutineScope instead. This API will be hidden in the next release")
 public fun launch(
     context: CoroutineContext = DefaultDispatcher,
     start: CoroutineStart = CoroutineStart.DEFAULT,
@@ -78,8 +78,6 @@ public fun CoroutineScope.launch(
 }
 
 /**
- * TODO deprecate?
- *
  * Calls the specified suspending block with a given coroutine context, suspends until it completes, and returns
  * the result.
  *
@@ -94,6 +92,8 @@ public fun CoroutineScope.launch(
  * to be processed by the invoker context.
  * Other options can be specified via `start` parameter. See [CoroutineStart] for details.
  * A value of [CoroutineStart.LAZY] is not supported and produces [IllegalArgumentException].
+ *
+ * TODO coroutine scope receiver or deprecate and provide invoke operator?
  */
 public suspend fun <T> withContext(
     context: CoroutineContext,

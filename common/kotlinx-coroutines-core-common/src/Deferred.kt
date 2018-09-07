@@ -125,9 +125,10 @@ public interface Deferred<out T> : Job {
 
 
 /**
- * TODO replace with and explain why it's deprecated
+ * Creates new coroutine and returns its future result as an implementation of [Deferred].
+ * Deprecated, use [CoroutineScope.async] instead.
  */
-@Deprecated(message = "TODO", replaceWith = ReplaceWith("CoroutineScope.async"))
+@Deprecated(message = "Standalone coroutine builders are deprecated, use extensions on CoroutineScope instead. This API will be hidden in the next release")
 public fun <T> async(
     context: CoroutineContext = DefaultDispatcher,
     start: CoroutineStart = CoroutineStart.DEFAULT,

@@ -36,87 +36,10 @@ interface ActorJob<in E> : SendChannel<E> {
 
 /**
  * Launches new coroutine that is receiving messages from its mailbox channel
- * and returns a reference to its mailbox channel as a [SendChannel]. The resulting
- * object can be used to [send][SendChannel.send] messages to this coroutine.
- *
- * The scope of the coroutine contains [ActorScope] interface, which implements
- * both [CoroutineScope] and [ReceiveChannel], so that coroutine can invoke
- * [receive][ReceiveChannel.receive] directly. The channel is [closed][SendChannel.close]
- * when the coroutine completes.
- *
- * The [context] for the new coroutine can be explicitly specified.
- * See [CoroutineDispatcher] for the standard context implementations that are provided by `kotlinx.coroutines`.
- * The [coroutineContext] of the parent coroutine may be used,
- * in which case the [Job] of the resulting coroutine is a child of the job of the parent coroutine.
- * The parent job may be also explicitly specified using [parent] parameter.
- *
- * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
- *
- * By default, the coroutine is immediately scheduled for execution.
- * Other options can be specified via `start` parameter. See [CoroutineStart] for details.
- * An optional [start] parameter can be set to [CoroutineStart.LAZY] to start coroutine _lazily_. In this case,
- * it will be started implicitly on the first message
- * [sent][SendChannel.send] to this actors's mailbox channel.
- *
- * Uncaught exceptions in this coroutine close the channel with this exception as a cause and
- * the resulting channel becomes _failed_, so that any attempt to send to such a channel throws exception.
- *
- * The kind of the resulting channel depends on the specified [capacity] parameter:
- * * when `capacity` is 0 (default) -- uses [RendezvousChannel] without a buffer;
- * * when `capacity` is [Channel.UNLIMITED] -- uses [LinkedListChannel] with buffer of unlimited size;
- * * when `capacity` is [Channel.CONFLATED] -- uses [ConflatedChannel] that conflates back-to-back sends;
- * * when `capacity` is positive, but less than [UNLIMITED] -- uses [ArrayChannel] with a buffer of the specified `capacity`;
- * * otherwise -- throws [IllegalArgumentException].
- *
- * See [newCoroutineContext] for a description of debugging facilities that are available for newly created coroutine.
- *
- * ### Using actors
- *
- * A typical usage of the actor builder looks like this:
- *
- * ```
- * val c = actor {
- *     // initialize actor's state
- *     for (msg in channel) {
- *         // process message here
- *     }
- * }
- * // send messages to the actor
- * c.send(...)
- * ...
- * // stop the actor when it is no longer needed
- * c.close()
- * ```
- *
- * ### Stopping and cancelling actors
- *
- * When the inbox channel of the actor is [closed][SendChannel.close] it sends a special "close token" to the actor.
- * The actor still processes all the messages that were already sent and then "`for (msg in channel)`" loop terminates
- * and the actor completes.
- *
- * If the actor needs to be aborted without processing all the messages that were already sent to it, then
- * it shall be created with a parent job:
- *
- * ```
- * val job = Job()
- * val c = actor(parent = job) {  ... }
- * ...
- * // abort the actor
- * job.cancel()
- * ```
- *
- * When actor's parent job is [cancelled][Job.cancel], then actor's job becomes cancelled. It means that
- * "`for (msg in channel)`" and other cancellable suspending functions throw [CancellationException] and actor
- * completes without processing remaining messages.
- *
- * @param context context of the coroutine. The default value is [DefaultDispatcher].
- * @param capacity capacity of the channel's buffer (no buffer by default).
- * @param start coroutine start option. The default value is [CoroutineStart.DEFAULT].
- * @param parent explicitly specifies the parent job, overrides job from the [context] (if any).*
- * @param onCompletion optional completion handler for the actor coroutine (see [Job.invokeOnCompletion]).
- * @param block the coroutine code.
+ * and returns a reference to its mailbox channel as a [SendChannel].
+ * Deprecated, use [CoroutineScope.actor] instead.
  */
-@Deprecated(message = "TODO")
+@Deprecated(message = "Standalone coroutine builders are deprecated, use extensions on CoroutineScope instead. This API will be hidden in the next release")
 public fun <E> actor(
     context: CoroutineContext = DefaultDispatcher,
     capacity: Int = 0,
