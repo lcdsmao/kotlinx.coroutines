@@ -4,6 +4,7 @@
 
 package kotlinx.coroutines.experimental
 
+import kotlinx.coroutines.experimental.internal.*
 import kotlinx.coroutines.experimental.intrinsics.*
 import kotlinx.coroutines.experimental.selects.*
 import kotlin.coroutines.experimental.*
@@ -150,7 +151,7 @@ public fun <T> async(
  * The running coroutine is cancelled when the resulting deferred is [cancelled][Job.cancel].
  * Parent of the created coroutine is inherited from the provided [CoroutineScope].
  *
- * The [context] for the new coroutine can be explicitly specified.
+ * Coroutine context is inherited from [CoroutineScope], additional context elements can be specified with [context] argument.
  * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
  *
  * By default, the coroutine is immediately scheduled for execution.
@@ -159,7 +160,7 @@ public fun <T> async(
  * the resulting [Deferred] is created in _new_ state. It can be explicitly started with [start][Job.start]
  * function and will be started implicitly on the first invocation of [join][Job.join], [await][Deferred.await] or [awaitAll].
  *
- * @param context additional (to [CoroutineScope.coroutineContext]]) context of the coroutine
+ * @param context additional to [CoroutineScope.coroutineContext] context of the coroutine
  * @param start coroutine start option. The default value is [CoroutineStart.DEFAULT].
  * @param onCompletion optional completion handler for the coroutine (see [Job.invokeOnCompletion]).
  * @param block the coroutine code.
@@ -170,9 +171,7 @@ public fun <T> CoroutineScope.async(
     onCompletion: CompletionHandler? = null,
     block: suspend CoroutineScope.() -> T
 ): Deferred<T> {
-    val aggregated = coroutineContext + context
-    val ctx = if (aggregated[ContinuationInterceptor] != null) aggregated else aggregated + DefaultDispatcher
-    val newContext = newCoroutineContext(ctx)
+    val newContext = newContextWithDispatcher(context)
     val coroutine = if (start.isLazy)
         LazyDeferredCoroutine(newContext, block) else
         DeferredCoroutine<T>(newContext, active = true)

@@ -174,4 +174,18 @@ class JobTest : TestBase() {
         job.cancelAndJoin()
         finish(4)
     }
+
+    @Test
+    fun testOverriddenParent() = runTest {
+        val parent = Job()
+        val deferred = launch(parent, CoroutineStart.ATOMIC) {
+            expect(2)
+            delay(Long.MAX_VALUE)
+        }
+
+        parent.cancel()
+        expect(1)
+        deferred.join()
+        finish(3)
+    }
 }

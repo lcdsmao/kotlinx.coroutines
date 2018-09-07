@@ -55,7 +55,7 @@ public fun launch(
  *
  * See [newCoroutineContext] for a description of debugging facilities that are available for newly created coroutine.
  *
- * @param context additional (to [CoroutineScope.coroutineContext]]) context of the coroutine
+ * @param context additional to [CoroutineScope.coroutineContext] context of the coroutine
  * @param start coroutine start option. The default value is [CoroutineStart.DEFAULT].
  * @param onCompletion optional completion handler for the coroutine (see [Job.invokeOnCompletion]).
  * @param block the coroutine code which will be invoked in the context of the provided scope
@@ -66,9 +66,7 @@ public fun CoroutineScope.launch(
     onCompletion: CompletionHandler? = null,
     block: suspend CoroutineScope.() -> Unit
 ): Job {
-    val aggregated = coroutineContext + context
-    val ctx = if (aggregated[ContinuationInterceptor] != null) aggregated else aggregated + DefaultDispatcher
-    val newContext = newCoroutineContext(ctx)
+    val newContext = newContextWithDispatcher(context)
     val coroutine = if (start.isLazy)
         LazyStandaloneCoroutine(newContext, block) else
         StandaloneCoroutine(newContext, active = true)

@@ -118,7 +118,7 @@ private class ProducerCoroutine<E>(
 ) : ChannelCoroutine<E>(parentContext, channel, active = true), ProducerScope<E>, ProducerJob<E> {
 
     override val isActive: Boolean
-        get() = super<ChannelCoroutine<E>>.isActive
+        get() = super<ChannelCoroutine>.isActive
 
     override fun onCancellationInternal(exceptionally: CompletedExceptionally?) {
         val cause = exceptionally?.cause

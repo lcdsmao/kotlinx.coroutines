@@ -24,3 +24,9 @@ internal class ScopeOwnerCoroutine<R>(parentContext: CoroutineContext)
 internal class ContextScope(context: CoroutineContext) : CoroutineScope {
     override val coroutineContext: CoroutineContext = context
 }
+
+internal fun CoroutineScope.newContextWithDispatcher(additionalContext: CoroutineContext): CoroutineContext {
+    val aggregated = coroutineContext + additionalContext
+    val ctx = if (aggregated[ContinuationInterceptor] != null) aggregated else aggregated + DefaultDispatcher
+    return newCoroutineContext(ctx)
+}
