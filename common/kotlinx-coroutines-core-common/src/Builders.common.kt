@@ -39,11 +39,13 @@ public fun launch(
 /**
  * Launches new coroutine without blocking current thread and returns a reference to the coroutine as a [Job].
  * The coroutine is cancelled when the resulting job is [cancelled][Job.cancel].
- * Parent of the created coroutine is inherited from the provided [CoroutineScope].
+ *
+ * Coroutine context is inherited from a [CoroutineScope], additional context elements can be specified with [context] argument.
+ * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
+ * The parent job is inherited from a [CoroutineScope] as well, but it can also be overridden
+ * with corresponding [coroutineContext] element.
  *
  * By default, the coroutine is immediately scheduled for execution.
- * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
- *
  * Other start options can be specified via `start` parameter. See [CoroutineStart] for details.
  * An optional [start] parameter can be set to [CoroutineStart.LAZY] to start coroutine _lazily_. In this case,
  * the coroutine [Job] is created in _new_ state. It can be explicitly started with [start][Job.start] function

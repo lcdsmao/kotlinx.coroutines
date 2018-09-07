@@ -151,8 +151,10 @@ public fun <T> async(
  * The running coroutine is cancelled when the resulting deferred is [cancelled][Job.cancel].
  * Parent of the created coroutine is inherited from the provided [CoroutineScope].
  *
- * Coroutine context is inherited from [CoroutineScope], additional context elements can be specified with [context] argument.
+ * Coroutine context is inherited from a [CoroutineScope], additional context elements can be specified with [context] argument.
  * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
+ * The parent job is inherited from a [CoroutineScope] as well, but it can also be overridden
+ * with corresponding [coroutineContext] element.
  *
  * By default, the coroutine is immediately scheduled for execution.
  * Other options can be specified via `start` parameter. See [CoroutineStart] for details.

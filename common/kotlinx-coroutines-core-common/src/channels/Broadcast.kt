@@ -98,11 +98,8 @@ public fun <E> broadcast(
  *
  * Coroutine context is inherited from a [CoroutineScope], additional context elements can be specified with [context] argument.
  * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
- *
- * The parent job is inherited from a [CoroutineScope] as well, but parent job can also be overriden
+ * The parent job is inherited from a [CoroutineScope] as well, but it can also be overridden
  * with corresponding [coroutineContext] element.
- *
- * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
  *
  * Uncaught exceptions in this coroutine close the channel with this exception as a cause and
  * the resulting channel becomes _failed_, so that any attempt to receive from such a channel throws exception.

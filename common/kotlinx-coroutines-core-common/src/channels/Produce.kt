@@ -6,6 +6,7 @@ package kotlinx.coroutines.experimental.channels
 
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.experimental.internal.*
 import kotlin.coroutines.experimental.*
 
 /**
@@ -69,6 +70,7 @@ interface ProducerJob<out E> : ReceiveChannel<E>, Job {
  * @param onCompletion optional completion handler for the producer coroutine (see [Job.invokeOnCompletion]).
  * @param block the coroutine code.
  */
+@Deprecated(message = "TODO")
 public fun <E> produce(
     context: CoroutineContext = DefaultDispatcher,
     capacity: Int = 0,
@@ -78,6 +80,53 @@ public fun <E> produce(
 ): ReceiveChannel<E> {
     val channel = Channel<E>(capacity)
     val newContext = newCoroutineContext(context, parent)
+    val coroutine = ProducerCoroutine(newContext, channel)
+    if (onCompletion != null) coroutine.invokeOnCompletion(handler = onCompletion)
+    coroutine.start(CoroutineStart.DEFAULT, coroutine, block)
+    return coroutine
+}
+
+/**
+ * Launches new coroutine to produce a stream of values by sending them to a channel
+ * and returns a reference to the coroutine as a [ReceiveChannel]. This resulting
+ * object can be used to [receive][ReceiveChannel.receive] elements produced by this coroutine.
+ *
+ * The scope of the coroutine contains [ProducerScope] interface, which implements
+ * both [CoroutineScope] and [SendChannel], so that coroutine can invoke
+ * [send][SendChannel.send] directly. The channel is [closed][SendChannel.close]
+ * when the coroutine completes.
+ * The running coroutine is cancelled when its receive channel is [cancelled][ReceiveChannel.cancel].
+ *
+ * Coroutine context is inherited from a [CoroutineScope], additional context elements can be specified with [context] argument.
+ * If the context does not have any dispatcher nor any other [ContinuationInterceptor], then [DefaultDispatcher] is used.
+ * The parent job is inherited from a [CoroutineScope] as well, but it can also be overridden
+ * with corresponding [coroutineContext] element.
+ *
+ * Uncaught exceptions in this coroutine close the channel with this exception as a cause and
+ * the resulting channel becomes _failed_, so that any attempt to receive from such a channel throws exception.
+ *
+ * The kind of the resulting channel depends on the specified [capacity] parameter:
+ * * when `capacity` is 0 (default) -- uses [RendezvousChannel] without a buffer;
+ * * when `capacity` is [Channel.UNLIMITED] -- uses [LinkedListChannel] with buffer of unlimited size;
+ * * when `capacity` is [Channel.CONFLATED] -- uses [ConflatedChannel] that conflates back-to-back sends;
+ * * when `capacity` is positive, but less than [UNLIMITED] -- uses [ArrayChannel] with a buffer of the specified `capacity`;
+ * * otherwise -- throws [IllegalArgumentException].
+ *
+ * See [newCoroutineContext] for a description of debugging facilities that are available for newly created coroutine.
+ *
+ * @param context context of the coroutine. The default value is [DefaultDispatcher].
+ * @param capacity capacity of the channel's buffer (no buffer by default).
+ * @param onCompletion optional completion handler for the producer coroutine (see [Job.invokeOnCompletion]).
+ * @param block the coroutine code.
+ */
+public fun <E> CoroutineScope.produce(
+    context: CoroutineContext = EmptyCoroutineContext,
+    capacity: Int = 0,
+    onCompletion: CompletionHandler? = null,
+    block: suspend ProducerScope<E>.() -> Unit
+): ReceiveChannel<E> {
+    val channel = Channel<E>(capacity)
+    val newContext = newContextWithDispatcher(context)
     val coroutine = ProducerCoroutine(newContext, channel)
     if (onCompletion != null) coroutine.invokeOnCompletion(handler = onCompletion)
     coroutine.start(CoroutineStart.DEFAULT, coroutine, block)
