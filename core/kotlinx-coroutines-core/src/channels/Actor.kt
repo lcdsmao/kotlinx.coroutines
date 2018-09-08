@@ -47,17 +47,8 @@ public fun <E> actor(
     parent: Job? = null,
     onCompletion: CompletionHandler? = null,
     block: suspend ActorScope<E>.() -> Unit
-): SendChannel<E> {
-    val newContext = newCoroutineContext(context, parent)
-    val channel = Channel<E>(capacity)
-    val coroutine = if (start.isLazy)
-        LazyActorCoroutine(newContext, channel, block) else
-        ActorCoroutine(newContext, channel, active = true)
-    if (onCompletion != null) coroutine.invokeOnCompletion(handler = onCompletion)
-    coroutine.start(start, coroutine, block)
-    return coroutine
-}
-
+): SendChannel<E> =
+    CoroutineScope(context).actor(parent ?: EmptyCoroutineContext, capacity, start, onCompletion, block)
 
 /**
  * Launches new coroutine that is receiving messages from its mailbox channel
@@ -144,7 +135,7 @@ public fun <E> CoroutineScope.actor(
     onCompletion: CompletionHandler? = null,
     block: suspend ActorScope<E>.() -> Unit
 ): SendChannel<E> {
-    val newContext = newContextWithDispatcher(context)
+    val newContext = newCoroutineContext(context)
     val channel = Channel<E>(capacity)
     val coroutine = if (start.isLazy)
         LazyActorCoroutine(newContext, channel, block) else

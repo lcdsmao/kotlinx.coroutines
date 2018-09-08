@@ -93,7 +93,7 @@ public fun <E> CoroutineScope.broadcast(
     onCompletion: CompletionHandler? = null,
     block: suspend ProducerScope<E>.() -> Unit
 ): BroadcastChannel<E> {
-    val newContext = newContextWithDispatcher(context)
+    val newContext = newCoroutineContext(context)
     val channel = BroadcastChannel<E>(capacity)
     val coroutine = if (start.isLazy)
         LazyBroadcastCoroutine(newContext, channel, block) else

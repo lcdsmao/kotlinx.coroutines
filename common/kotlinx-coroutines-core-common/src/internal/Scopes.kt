@@ -7,13 +7,14 @@ package kotlinx.coroutines.experimental.internal
 import kotlinx.coroutines.experimental.*
 import kotlin.coroutines.experimental.*
 
-internal class ScopeOwnerCoroutine<R>(parentContext: CoroutineContext)
-    : AbstractCoroutine<R>(parentContext, true), CoroutineScope {
+internal class ScopeOwnerCoroutine<R>(
+    parentContext: CoroutineContext
+) : AbstractCoroutine<R>(parentContext, true), CoroutineScope {
 
     override val coroutineContext: CoroutineContext = parentContext + this
 
     /*
-     * Always return true, so final exception will be accumulated in the scope before its completion
+     * Always return true, so final exception is in the scope before its completion.
      */
     override fun cancel(cause: Throwable?): Boolean {
         super.cancel(cause)
@@ -25,8 +26,5 @@ internal class ContextScope(context: CoroutineContext) : CoroutineScope {
     override val coroutineContext: CoroutineContext = context
 }
 
-internal fun CoroutineScope.newContextWithDispatcher(additionalContext: CoroutineContext): CoroutineContext {
-    val aggregated = coroutineContext + additionalContext
-    val ctx = if (aggregated[ContinuationInterceptor] != null) aggregated else aggregated + DefaultDispatcher
-    return newCoroutineContext(ctx)
-}
+internal fun CoroutineScope.newCoroutineContext(context: CoroutineContext): CoroutineContext =
+    newCoroutineContext(coroutineContext + context, parent = null)

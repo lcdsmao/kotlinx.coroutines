@@ -94,7 +94,7 @@ public fun <E> CoroutineScope.produce(
     block: suspend ProducerScope<E>.() -> Unit
 ): ReceiveChannel<E> {
     val channel = Channel<E>(capacity)
-    val newContext = newContextWithDispatcher(context)
+    val newContext = newCoroutineContext(context)
     val coroutine = ProducerCoroutine(newContext, channel)
     if (onCompletion != null) coroutine.invokeOnCompletion(handler = onCompletion)
     coroutine.start(CoroutineStart.DEFAULT, coroutine, block)
