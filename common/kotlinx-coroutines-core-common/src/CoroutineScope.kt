@@ -92,7 +92,7 @@ public operator fun CoroutineScope.plus(context: CoroutineContext): CoroutineSco
  *
  * Check this property in long-running computation loops to support cancellation:
  * ```
- * while (_isActive) {
+ * while (isActive) {
  *     // do some computation
  * }
  * ```

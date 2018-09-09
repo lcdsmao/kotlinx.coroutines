@@ -8,9 +8,8 @@ package kotlinx.coroutines.experimental.guide.basic04
 import kotlinx.coroutines.experimental.*
 
 fun main(args: Array<String>) = runBlocking<Unit> {
-    val job = launch { doWorld() }
+    launch { doWorld() }
     println("Hello,")
-    job.join()
 }
 
 // this is your first suspending function
