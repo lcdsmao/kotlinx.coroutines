@@ -48,21 +48,39 @@ class GuideTest {
     @Test
     fun testKotlinxCoroutinesExperimentalGuideBasic04() {
         test("KotlinxCoroutinesExperimentalGuideBasic04") { kotlinx.coroutines.experimental.guide.basic04.main(emptyArray()) }.verifyLines(
+            "Task from coroutine scope",
+            "Task from runBlocking",
+            "Task from nested launch",
+            "Coroutine scope is over"
+        )
+    }
+
+    @Test
+    fun testKotlinxCoroutinesExperimentalGuideBasic05() {
+        test("KotlinxCoroutinesExperimentalGuideBasic05") { kotlinx.coroutines.experimental.guide.basic05.main(emptyArray()) }.verifyLines(
             "Hello,",
             "World!"
         )
     }
 
     @Test
-    fun testKotlinxCoroutinesExperimentalGuideBasic05() {
-        test("KotlinxCoroutinesExperimentalGuideBasic05") { kotlinx.coroutines.experimental.guide.basic05.main(emptyArray()) }.also { lines ->
+    fun testKotlinxCoroutinesExperimentalGuideBasic05s() {
+        test("KotlinxCoroutinesExperimentalGuideBasic05s") { kotlinx.coroutines.experimental.guide.basic05s.main(emptyArray()) }.verifyLines(
+            "Hello,",
+            "World!"
+        )
+    }
+
+    @Test
+    fun testKotlinxCoroutinesExperimentalGuideBasic06() {
+        test("KotlinxCoroutinesExperimentalGuideBasic06") { kotlinx.coroutines.experimental.guide.basic06.main(emptyArray()) }.also { lines ->
             check(lines.size == 1 && lines[0] == ".".repeat(100_000))
         }
     }
 
     @Test
-    fun testKotlinxCoroutinesExperimentalGuideBasic06() {
-        test("KotlinxCoroutinesExperimentalGuideBasic06") { kotlinx.coroutines.experimental.guide.basic06.main(emptyArray()) }.verifyLines(
+    fun testKotlinxCoroutinesExperimentalGuideBasic07() {
+        test("KotlinxCoroutinesExperimentalGuideBasic07") { kotlinx.coroutines.experimental.guide.basic07.main(emptyArray()) }.verifyLines(
             "I'm sleeping 0 ...",
             "I'm sleeping 1 ...",
             "I'm sleeping 2 ..."
@@ -186,6 +204,15 @@ class GuideTest {
         test("KotlinxCoroutinesExperimentalGuideCompose05") { kotlinx.coroutines.experimental.guide.compose05.main(emptyArray()) }.verifyLinesArbitraryTime(
             "The answer is 42",
             "Completed in 1017 ms"
+        )
+    }
+
+    @Test
+    fun testKotlinxCoroutinesExperimentalGuideCompose06() {
+        test("KotlinxCoroutinesExperimentalGuideCompose06") { kotlinx.coroutines.experimental.guide.compose06.main(emptyArray()) }.verifyLines(
+            "Second child throws an exception",
+            "First child was cancelled",
+            "Computation failed with ArithmeticException"
         )
     }
 

@@ -44,6 +44,7 @@ You need to add a dependency on `kotlinx-coroutines-core` module as explained
   * [Bridging blocking and non-blocking worlds](#bridging-blocking-and-non-blocking-worlds)
   * [Waiting for a job](#waiting-for-a-job)
   * [Structured concurrency](#structured-concurrency)
+  * [Scope builder](#scope-builder)
   * [Extract function refactoring](#extract-function-refactoring)
   * [Coroutines ARE light-weight](#coroutines-are-light-weight)
   * [Global coroutines are like daemon threads](#global-coroutines-are-like-daemon-threads)
@@ -281,6 +282,42 @@ Hello,
 World!
 -->
 
+### Scope builder
+In addition to the coroutine scope provided by different builders, it is possible to declare your own scope using
+[coroutineScope] builder. It creates new coroutine scope and does not complete until all launched children
+complete. The main difference between [runBlocking] and [coroutineScope] is that the latter doesn't block the current thread 
+while waiting for all children to complete.
+
+```kotlin
+fun main(args: Array<String>) = runBlocking<Unit> { // this: CoroutineScope
+    launch { 
+        delay(200L)
+        println("Task from runBlocking")
+    }
+    
+    coroutineScope { // Creates a new coroutine scope
+        launch {
+            delay(500L) 
+            println("Task from nested launch")
+        }
+    
+        delay(100L)
+        println("Task from coroutine scope") // This line will be printed before nested launch
+    }
+    
+    println("Coroutine scope is over") // This line is not printed until nested launch completes
+}
+```
+
+> You can get full code [here](core/kotlinx-coroutines-core/test/guide/example-basic-04.kt)
+
+<!--- TEST
+Task from coroutine scope
+Task from runBlocking
+Task from nested launch
+Coroutine scope is over
+-->
+
 ### Extract function refactoring
 
 Let's extract the block of code inside `launch { ... }` into a separate function. When you 
@@ -302,7 +339,34 @@ suspend fun doWorld() {
 }
 ```
 
-> You can get full code [here](core/kotlinx-coroutines-core/test/guide/example-basic-04.kt)
+> You can get full code [here](core/kotlinx-coroutines-core/test/guide/example-basic-05.kt)
+
+<!--- TEST
+Hello,
+World!
+-->
+
+
+But what if the extracted function contains a coroutine builder which is invoked on the current scope?
+In this case `suspend` modifier on the extracted function is not enough. Making `doWorld` extension
+method on `CoroutineScope` is one of the solutions, but it may not always be applicable as it doesn't make API clearer.
+[currentScope] builder comes to help: it inherits current [CoroutineScope] from the coroutine context it's invoked.
+
+```kotlin
+fun main(args: Array<String>) = runBlocking<Unit> {
+    launchDoWorld()
+    println("Hello,")
+}
+
+// this is your first suspending function
+suspend fun launchDoWorld() = currentScope {
+        launch {
+        println("World!")
+    }
+}
+```
+
+> You can get full code [here](core/kotlinx-coroutines-core/test/guide/example-basic-05s.kt)
 
 <!--- TEST
 Hello,
@@ -324,7 +388,7 @@ fun main(args: Array<String>) = runBlocking<Unit> {
 }
 ```
 
-> You can get full code [here](core/kotlinx-coroutines-core/test/guide/example-basic-05.kt)
+> You can get full code [here](core/kotlinx-coroutines-core/test/guide/example-basic-06.kt)
 
 <!--- TEST lines.size == 1 && lines[0] == ".".repeat(100_000) -->
 
@@ -348,7 +412,7 @@ fun main(args: Array<String>) = runBlocking<Unit> {
 }
 ```
 
-> You can get full code [here](core/kotlinx-coroutines-core/test/guide/example-basic-06.kt)
+> You can get full code [here](core/kotlinx-coroutines-core/test/guide/example-basic-07.kt)
 
 You can run and see that it prints three lines and terminates:
 
@@ -482,7 +546,7 @@ fun main(args: Array<String>) = runBlocking<Unit> {
 
 > You can get full code [here](core/kotlinx-coroutines-core/test/guide/example-cancel-03.kt)
 
-As you can see, now this loop is cancelled. [isActive][CoroutineScope.isActive] is an extension property that is
+As you can see, now this loop is cancelled. [isActive] is an extension property that is
 available inside the code of coroutine via [CoroutineScope] object.
 
 <!--- TEST
@@ -855,7 +919,8 @@ scope and that is what [coroutineScope] function provides:
 suspend fun concurrentSum(): Int = coroutineScope {
     val one = async { doSomethingUsefulOne() }
     val two = async { doSomethingUsefulTwo() }
-    one.await() + two.await()
+     awaitAll(one, two)
+     one.await() + two.await()
 }
 ```
 
@@ -881,6 +946,48 @@ Completed in 1017 ms
 ```
 
 <!--- TEST ARBITRARY_TIME -->
+
+Cancellation is always propagated through coroutines hierarchy:
+
+```kotlin
+fun main(args: Array<String>) = runBlocking<Unit> {
+    try {
+        failedConcurrentSum()
+    } catch(e: ArithmeticException) {
+        println("Computation failed with ArithmeticException")
+    }
+}
+
+suspend fun failedConcurrentSum(): Int = coroutineScope {
+    val one = async<Int> { 
+        try {
+            delay(Long.MAX_VALUE) // Emulates very long computation
+            42
+        } finally {
+            println("First child was cancelled")
+        }
+    }
+    val two = async<Int> { 
+        println("Second child throws an exception")
+        throw ArithmeticException()
+    }
+    
+    awaitAll(one, two)
+    one.await() + two.await()
+}
+```
+
+> You can get full code [here](core/kotlinx-coroutines-core/test/guide/example-compose-06.kt)
+
+Note, how both first `async` and awaiting parent are cancelled on the one child failure:
+```text
+Second child throws an exception
+First child was cancelled
+Computation failed with ArithmeticException
+```
+
+<!--- TEST -->
+
 
 ## Coroutine context and dispatchers
 
@@ -938,7 +1045,7 @@ main runBlocking      : I'm working in thread main
 <!--- TEST LINES_START_UNORDERED -->
 
 When `launch { ... }` is used without parameters, it inherits the context (and thus dispatcher)
-for the [CoroutineScope] that it is being launched from. In this case, it inherits the
+from the [CoroutineScope] that it is being launched from. In this case, it inherits the
 context of the main `runBlocking` coroutine which runs in the `main` thread. 
 
 [Unconfined] is a special dispatcher that also appears to run in the `main` thread, but it is,
@@ -1122,7 +1229,7 @@ My job is "coroutine#1":BlockingCoroutine{Active}@6d311334
 
 <!--- TEST lines.size == 1 && lines[0].startsWith("My job is \"coroutine#1\":BlockingCoroutine{Active}@") -->
 
-Note, that [isActive][CoroutineScope.isActive] in [CoroutineScope] is just a convenient shortcut for
+Note, that [isActive] in [CoroutineScope] is just a convenient shortcut for
 `coroutineContext[Job]?.isActive == true`.
 
 ### Children of a coroutine
@@ -2942,10 +3049,13 @@ Channel was closed
 [runBlocking]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/run-blocking.html
 [Job]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/-job/index.html
 [Job.join]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/-job/join.html
+[coroutineScope]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/coroutine-scope.html
+[currentScope]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/current-scope.html
 [cancelAndJoin]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/cancel-and-join.html
 [Job.cancel]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/-job/cancel.html
 [CancellationException]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/-cancellation-exception/index.html
 [yield]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/yield.html
+[isActive]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/is-active.html
 [withContext]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/with-context.html
 [NonCancellable]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/-non-cancellable/index.html
 [withTimeout]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/with-timeout.html
@@ -2955,7 +3065,6 @@ Channel was closed
 [CoroutineStart.LAZY]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/-coroutine-start/-l-a-z-y.html
 [Deferred.await]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/-deferred/await.html
 [Job.start]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/-job/start.html
-[coroutineScope]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/coroutine-scope.html
 [CoroutineDispatcher]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/-coroutine-dispatcher/index.html
 [Unconfined]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/-unconfined/index.html
 [DefaultDispatcher]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.experimental/-default-dispatcher.html

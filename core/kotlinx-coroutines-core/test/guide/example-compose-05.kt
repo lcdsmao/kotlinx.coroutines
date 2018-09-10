@@ -21,7 +21,8 @@ suspend fun doSomethingUsefulTwo(): Int {
 suspend fun concurrentSum(): Int = coroutineScope {
     val one = async { doSomethingUsefulOne() }
     val two = async { doSomethingUsefulTwo() }
-    one.await() + two.await()
+     awaitAll(one, two)
+     one.await() + two.await()
 }
 
 fun main(args: Array<String>) = runBlocking<Unit> {
