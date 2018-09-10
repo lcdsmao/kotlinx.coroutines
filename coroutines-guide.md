@@ -285,7 +285,7 @@ World!
 ### Scope builder
 In addition to the coroutine scope provided by different builders, it is possible to declare your own scope using
 [coroutineScope] builder. It creates new coroutine scope and does not complete until all launched children
-complete. The main difference between [runBlocking] and [coroutineScope] is that the latter doesn't block the current thread 
+complete. The main difference between [runBlocking] and [coroutineScope] is that the latter does not block the current thread 
 while waiting for all children to complete.
 
 ```kotlin
@@ -349,8 +349,8 @@ World!
 
 But what if the extracted function contains a coroutine builder which is invoked on the current scope?
 In this case `suspend` modifier on the extracted function is not enough. Making `doWorld` extension
-method on `CoroutineScope` is one of the solutions, but it may not always be applicable as it doesn't make API clearer.
-[currentScope] builder comes to help: it inherits current [CoroutineScope] from the coroutine context it's invoked.
+method on `CoroutineScope` is one of the solutions, but it may not always be applicable as it does not make API clearer.
+[currentScope] builder comes to help: it inherits current [CoroutineScope] from the coroutine context it is invoked.
 
 ```kotlin
 fun main(args: Array<String>) = runBlocking<Unit> {
@@ -1611,7 +1611,7 @@ But what if one does not want to print all exceptions to the console?
 [CoroutineExceptionHandler] context element is used as generic `catch` block of coroutine where custom logging or exception handling may take place.
 It is similar to using [`Thread.uncaughtExceptionHandler`](https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html#setUncaughtExceptionHandler(java.lang.Thread.UncaughtExceptionHandler)).
 
-On JVM it's possible to redefine global exception handler for all coroutines by registering [CoroutineExceptionHandler] via
+On JVM it is possible to redefine global exception handler for all coroutines by registering [CoroutineExceptionHandler] via
 [`ServiceLoader`](https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html).
 Global exception handler is similar to 
 [`Thread.defaultUncaughtExceptionHandler`](https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html#setDefaultUncaughtExceptionHandler(java.lang.Thread.UncaughtExceptionHandler)) 
