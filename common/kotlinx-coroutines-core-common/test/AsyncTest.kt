@@ -66,7 +66,7 @@ class AsyncTest : TestBase() {
     @Test
     fun testLostException() = runTest {
         expect(1)
-        val deferred = async(coroutineContext, parent = Job()) {
+        val deferred = async(Job()) {
             expect(2)
             throw Exception()
         }
@@ -78,8 +78,8 @@ class AsyncTest : TestBase() {
 
     @Test
     fun testParallelDecompositionCaughtException() = runTest {
-        val deferred = async(coroutineContext, parent = Job()) {
-            val decomposed = async(coroutineContext) {
+        val deferred = async(Job()) {
+            val decomposed = async {
                 throw AssertionError()
                 1
             }
@@ -130,8 +130,8 @@ class AsyncTest : TestBase() {
 
     @Test
     fun testParallelDecompositionUncaughtException() = runTest(expected = { it is AssertionError }) {
-        val deferred = async(coroutineContext, parent = Job()) {
-            val decomposed = async(coroutineContext) {
+        val deferred = async(Job()) {
+            val decomposed = async {
                 throw AssertionError()
                 1
             }
